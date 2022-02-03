@@ -1440,25 +1440,19 @@
                                  </thead>
                                  <tbody>
                                     <?php $main_price = 0;$domain_price = 0; ?>
-                                    <?php 
-
-                                     ?>
                                     @forelse($data['order']->orderItems as $k=>$v)
                                     <?php $plan_details = App\Models\Plan::get_plan_details($v['plan_id']);                                     
-                                    ?>
-                                    <?php $plan_details = json_decode(json_encode($plan_details)); ?>
-                                   <?php  ?>
+                                    $plan_details = json_decode(json_encode($plan_details)); ?>
                                    @if(!empty($plan_details))
                                     <?php
                                         $main_price = number_format((float)$plan_details->price_annually+$plan_details->setup_fee_one_time, 2, '.', '');
-                                        $domain_price = number_format((float)$v['price'] - ($plan_details->price_annually+$plan_details->setup_fee_one_time), 2, '.', ''); ?>
+                                        $domain_price = number_format((float)$v['price'] - $main_price); ?>
                                     @else
-
                                     @php $main_price = $v->price; $domain_price = 0;@endphp
                                     @endif
                                     <?php
 
-                                      if($v->price != ''){
+                                    if($v->price != ''){
                                       $row_price = $v->price;
                                     }else{
                                       $row_price = 0.00;
@@ -1566,37 +1560,36 @@
                                              </table>
                                           </td>
                                           <td class="text-center">
-                                             
                                              <div class="pull-left">
                                                 <table border="5px" bordercolor="#F35557">
-                                              @if(!empty($plan_details))
                                               <tr><td>
                                               <?php 
 
-                                              if($main_price != $v['price']){  ?>
-                                              {{$v['cycle']}} <?php echo "years"; ?> <br/>
-                                                  <?php echo '1 years'; ?>
-                                                
-                                              <?php }else{ ?>
+                                              if($main_price != $v['price']){ 
+                                                 echo '1 years'; 
+                                                  $domain_year = $v['cycle'];
+                                               }else{ ?>
                                                 {{$v['cycle']}} <?php if($v['cycle'] == 1) echo "year"; else echo "years"; ?> <br/>
+                                              <?php $domain_year = '' ?>
                                               <?php } ?>
-                                              @else
-                                              @if(!empty($v['cycle']))
-                                              <?php $cycle = $v['cycle']; ?>
-                                              @else
-                                              <?php $cycle = 1; ?>
-                                              @endif
-                                              {{ $cycle }} <?php if($cycle == 1) echo "year"; else echo "years"; ?> <br/>
-                                              </td></tr>
-                                              @endif
+                                              </td>
+                                           </tr>
                                               <?php if(!empty($v->ssl_price) && $v->ssl_price != '0.00'){ ?>
                                              <tr><td>
                                           <?php $ssl_vl = explode('-', $v->ssl_price); echo '<br>';?>
 
                                            {{ $ssl_vl[0] }} Years
-                                        </td>
+                                           </td>
                                         </tr>
-                                          <?php } ?>
+                                        
+                                           <?php } ?>
+                                          <tr>
+                                             <td>
+                                                @if(!empty($domain_year))
+                                                <?php echo $domain_year. ' Years'; ?>
+                                                @endif
+                                             </td>
+                                          </tr>
                                        </table>
                                             </div>
                                              
